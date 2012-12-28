@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+<script type="text/javascript">
+    var mainWorker = new Worker("{{ STATIC_URL }}js/worker.js");
+    var scoreboard = new Worker("/static/js/scoreboard.js");
+
+    scoreboard.onmessage = function (event) {
+        console.log(event.data);
+    };
+
+    mainWorker.onmessage = function (event) {
+        var message = event.data;
+        if (message.geo != null) {
+            scoreboard.postMessage(message);
+        } else {
+            console.log(message);
+        }
+    };
+
+    function getScoreboard() {
+        scoreboard.postMessage('gimme');
+    }
+</script>
+{% endblock scripts %}
